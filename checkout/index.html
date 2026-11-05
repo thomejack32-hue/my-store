@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Checkout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d2433; --muted:#5d6675; --line:#dfe3e1; --panel:#f4f6f5; --bg:#fff;
+  --accent:#0f6b5c; --accent-dark:#0a4f44; --error:#b3261e;
+  --font:"Public Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--ink:#eceff1; --muted:#a3acb8; --line:#33403c; --panel:#1b2220; --bg:#131917; --accent:#3fbfa6; --accent-dark:#2fa38c; --error:#ff8a80}
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.5}
+a{color:var(--accent)}
+.wrap{display:grid;grid-template-columns:1fr;min-height:100vh}
+@media(min-width:900px){.wrap{grid-template-columns:1fr 440px}}
+.main{padding:32px 20px 48px;max-width:640px;width:100%;margin:0 auto}
+.side{background:var(--panel);padding:32px 20px;border-bottom:1px solid var(--line);order:-1}
+@media(min-width:900px){.side{order:0;border-bottom:0;border-left:1px solid var(--line);padding:48px 32px}.main{padding:48px 32px}}
+.side-inner{max-width:400px;margin:0 auto;position:sticky;top:32px}
+.brand{font-size:1.4rem;font-weight:700;text-decoration:none;color:var(--ink);display:inline-block;margin-bottom:24px}
+h2{font-size:1.05rem;margin:32px 0 12px;font-weight:600}
+.row{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:520px){.row.two{grid-template-columns:1fr 1fr}.row.three{grid-template-columns:2fr 1fr 1fr}}
+label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:11px 12px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input[aria-invalid="true"]{border-color:var(--error)}
+.err{color:var(--error);font-size:.8rem;min-height:1.1em;margin-top:2px}
+.slot{border:1px dashed var(--line);border-radius:6px;padding:18px;color:var(--muted);font-size:.9rem;background:var(--panel)}
+.ship{display:flex;justify-content:space-between;gap:12px;border:1.5px solid var(--accent);border-radius:6px;padding:14px}
+.ship small{display:block;color:var(--muted)}
+.pay{width:100%;margin-top:24px;padding:14px;font:inherit;font-weight:600;font-size:1rem;color:#fff;background:var(--accent);border:0;border-radius:6px;cursor:pointer}
+.pay:hover{background:var(--accent-dark)}
+.pay:disabled{opacity:.55;cursor:not-allowed}
+.note{font-size:.8rem;color:var(--muted);margin-top:12px}
+.status{margin-top:12px;font-size:.9rem}
+.item{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;margin-bottom:14px}
+.thumb{width:56px;height:56px;border-radius:6px;background:var(--line) center/cover;position:relative}
+.qty{position:absolute;top:-6px;right:-6px;background:var(--muted);color:var(--bg);font-size:.7rem;border-radius:99px;min-width:20px;height:20px;display:grid;place-items:center}
+.item small{color:var(--muted);display:block}
+.tot{display:flex;justify-content:space-between;margin:6px 0}
+.tot.final{font-size:1.15rem;font-weight:700;border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.empty{padding:16px 0;color:var(--muted)}
+/* Loading skeleton: purely visual, removed once the page is ready */
+#skeleton{position:fixed;inset:0;background:var(--bg);z-index:10;display:grid;grid-template-columns:1fr;transition:opacity .25s}
+@media(min-width:900px){#skeleton{grid-template-columns:1fr 440px}}
+#skeleton .l,#skeleton .r{padding:48px 32px}
+#skeleton .r{background:var(--panel);display:none}
+@media(min-width:900px){#skeleton .r{display:block}}
+.sk{background:var(--line);border-radius:6px;height:44px;margin-bottom:12px;animation:pulse 1.6s ease-in-out infinite}
+.sk.t{height:20px;width:40%;margin-top:24px}
+@keyframes pulse{50%{opacity:.45}}
+@media(prefers-reduced-motion:reduce){.sk{animation:none}#skeleton{transition:none}}
+</style>
+</head>
+<body>
+
+<div id="skeleton" aria-hidden="true">
+  <div class="l"><div class="sk" style="width:140px"></div><div class="sk"></div><div class="sk t"></div><div class="sk"></div><div class="sk"></div><div class="sk t"></div><div class="sk"></div><div class="sk"></div></div>
+  <div class="r"><div class="sk"></div><div class="sk"></div><div class="sk t"></div></div>
+</div>
+
+<div class="wrap">
+  <main class="main">
+    <a class="brand" id="brand" href="/">Your Store</a>
+
+    <form id="checkout-form" novalidate>
+      <h2>Express checkout</h2>
+      <!-- STEP 2: Stripe's Express Checkout Element (Apple Pay / Google Pay) mounts here -->
+      <div id="express-checkout-element" class="slot">Apple Pay and Google Pay appear here once Stripe is connected.</div>
+
+      <h2>Contact</h2>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <div class="err" data-for="email"></div>
+
+      <h2>Delivery address</h2>
+      <div class="row two">
+        <div><label for="fname">First name</label><input id="fname" name="fname" autocomplete="given-name" required><div class="err" data-for="fname"></div></div>
+        <div><label for="lname">Last name</label><input id="lname" name="lname" autocomplete="family-name" required><div class="err" data-for="lname"></div></div>
+      </div>
+      <div style="margin-top:12px"><label for="addr1">Address</label><input id="addr1" name="addr1" autocomplete="address-line1" required><div class="err" data-for="addr1"></div></div>
+      <div style="margin-top:12px"><label for="addr2">Apartment, suite (optional)</label><input id="addr2" name="addr2" autocomplete="address-line2"></div>
+      <div class="row three" style="margin-top:12px">
+        <div><label for="city">City</label><input id="city" name="city" autocomplete="address-level2" required><div class="err" data-for="city"></div></div>
+        <div><label for="state">County (optional)</label><input id="state" name="state" autocomplete="address-level1"></div>
+        <div><label for="zip">Postcode</label><input id="zip" name="zip" autocomplete="postal-code" required><div class="err" data-for="zip"></div></div>
+      </div>
+      <div style="margin-top:12px"><label for="country">Country</label><input id="country" name="country" value="United Kingdom" readonly></div>
+      <div style="margin-top:12px"><label for="phone">Phone (for delivery updates)</label><input id="phone" name="phone" type="tel" autocomplete="tel" required><div class="err" data-for="phone"></div></div>
+
+      <h2>Delivery</h2>
+      <div class="ship"><div><strong id="ship-name"></strong><small id="ship-time"></small></div><strong id="ship-price"></strong></div>
+
+      <h2>Payment</h2>
+      <!-- STEP 2: Stripe's Payment Element mounts here. Card numbers are typed into Stripe's own secure fields, never into this page's code. -->
+      <div id="payment-element" class="slot">Card fields appear here once Stripe is connected. This page has no card inputs of its own.</div>
+
+      <button class="pay" id="pay-btn" type="submit" disabled>Pay now</button>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <p class="note">Card details are handled only by Stripe and never reach this site.</p>
+    </form>
+  </main>
+
+  <aside class="side">
+    <div class="side-inner">
+      <h2 style="margin-top:0">Order summary</h2>
+      <div id="items"></div>
+      <div class="tot"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+      <div class="tot"><span>Shipping</span><span id="shipping">$0.00</span></div>
+      <div class="tot" id="vat-row" hidden><span>VAT</span><span>Included in prices</span></div>
+      <div class="tot final"><span>Total</span><span id="total">$0.00</span></div>
+      <p class="note">Display only. The final price is recalculated securely on the server from your store's real prices.</p>
+    </div>
+  </aside>
+</div>
+
+<script>
+/* ===== SETTINGS: edit these ===== */
+const CONFIG = {
+  storeName: "Your Store",
+  shopUrl: "/",
+  currency: "GBP",
+  vatRegistered: false, // set true only once you are VAT registered (prices must then include VAT)
+  shipping: { name: "Standard shipping", time: "Delivery in 3 to 7 business days", price: 0 } // use your real rate
+};
+
+/* The cart is read from the browser (key: checkout_cart), written by your store's cart page.
+   Format: [{variantId, title, variantTitle, price, quantity, image}]
+   These values are for DISPLAY only. The server must re-fetch real prices from Shopify. */
+function loadCart(){
+  if(new URLSearchParams(location.search).get("demo")==="1"){
+    return [{variantId:"demo-1",title:"Sample item",variantTitle:"Medium",price:40,quantity:2,image:""}];
+  }
+  try{ return JSON.parse(localStorage.getItem("checkout_cart")||"[]") }catch(e){ return [] }
+}
+
+const money=n=>new Intl.NumberFormat("en-GB",{style:"currency",currency:CONFIG.currency}).format(n);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=id=>document.getElementById(id);
+
+function render(){
+  $("vat-row").hidden=!CONFIG.vatRegistered;
+  const brand=$("brand"); brand.textContent=CONFIG.storeName; brand.href=CONFIG.shopUrl;
+  $("ship-name").textContent=CONFIG.shipping.name;
+  $("ship-time").textContent=CONFIG.shipping.time;
+  $("ship-price").textContent=CONFIG.shipping.price===0?"Free":money(CONFIG.shipping.price);
+  const cart=loadCart();
+  if(!cart.length){
+    $("items").innerHTML='<div class="empty">Your cart is empty. <a href="'+esc(CONFIG.shopUrl)+'">Return to the store</a>.</div>';
+    return;
+  }
+  let sub=0;
+  $("items").innerHTML=cart.map(i=>{
+    const line=(Number(i.price)||0)*(Number(i.quantity)||1); sub+=line;
+    const img=i.image?'style="background-image:url(\''+esc(i.image)+'\')"':"";
+    return '<div class="item"><div class="thumb" '+img+'><span class="qty">'+esc(i.quantity)+'</span></div>'
+      +'<div>'+esc(i.title)+(i.variantTitle?'<small>'+esc(i.variantTitle)+'</small>':'')+'</div>'
+      +'<div>'+money(line)+'</div></div>';
+  }).join("");
+  $("subtotal").textContent=money(sub);
+  $("shipping").textContent=CONFIG.shipping.price===0?"Free":money(CONFIG.shipping.price);
+  $("total").textContent=money(sub+CONFIG.shipping.price);
+}
+
+function validate(form){
+  let ok=true;
+  form.querySelectorAll("[required]").forEach(f=>{
+    const msg=form.querySelector('[data-for="'+f.id+'"]');
+    let bad=!f.value.trim() || (f.type==="email" && !/^\S+@\S+\.\S+$/.test(f.value));
+    f.setAttribute("aria-invalid",bad?"true":"false");
+    if(msg) msg.textContent=bad?(f.type==="email"?"Enter a valid email address.":"This field is required."):"";
+    if(bad) ok=false;
+  });
+  return ok;
+}
+
+/* STEP 2 will replace this function: it will call your server to create the Stripe payment. */
+async function startPayment(details,cart){
+  $("status").textContent="Payment is not connected yet. This is the page layout only.";
+}
+
+$("checkout-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!validate(e.target)) return;
+  const d=Object.fromEntries(new FormData(e.target));
+  await startPayment(d,loadCart());
+});
+
+render();
+window.addEventListener("load",()=>{
+  const s=$("skeleton"); s.style.opacity=0; setTimeout(()=>s.remove(),260);
+});
+</script>
+</body>
+</html>
